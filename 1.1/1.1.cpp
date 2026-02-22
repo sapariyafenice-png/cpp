@@ -1,128 +1,157 @@
-#include<iostream>
+#include <iostream>
 using namespace std;
-class bank_account
+
+class Wallet
 {
-    char acc_holder_name[100];
-    double acc_number;
-    long double acc_balance;
+private:
+    int id;
+    string username;
+    int balance;
 public:
-    void create_account();
-    char search_acc(double);
-    void depositing_money();
-    void withdrawing_money();
-    void checking_account_balance();
+    void setValues(int n, string name, int bal);
+    int loadMoney(int amt);
+    int transferMoney(Wallet &receiver, int amt);
+    void display();
 };
-void bank_account::create_account()
-{
-    cout<<"enter your account number : ";
-    cin>>acc_number;
-    cout<<"enter your account holder name : ";
-    cin>>acc_holder_name;
-    cout<<"enter current balance : ";
-    cin>>acc_balance;
-}
-char bank_account::search_acc(double x)
-{
-    if(acc_number==x)
-        return 'v';
-    else
-        return 'i';
-}
-void bank_account::depositing_money()
-{
-    int money;
-    cout<<"enter amount you want to deposit : ";
-    cin>>money;
-    acc_balance+=money;
-    cout<<"money deposit successfully."<<endl;
-}
-void bank_account::withdrawing_money()
-{
-    int money;
-    cout<<"enter amount you want to withdraw : ";
-    cin>>money;
-    acc_balance-=money;
-    cout<<"money withdrawed successfully."<<endl;
-}
-void bank_account::checking_account_balance()
-{
-    cout<<endl<<"your balance is : "<<acc_balance<<endl;
-}
+
+void Wallet :: setValues(int n, string name, int bal)
+    {
+        id=n;
+        username=name;
+        balance= bal;
+    }
+
+int Wallet :: loadMoney(int amt)
+    {
+        balance+=amt;
+        return balance;
+    }
+int Wallet :: transferMoney( Wallet &receiver, int amt)
+    {
+       if (amt <= 0)
+        {
+            cout << "Invalid amount.\n";
+            return 0;
+        }
+        else if (amt > balance)
+        {
+            cout << "Insufficient balance.\n";
+            return 0;
+        }
+        else
+        {
+            balance -= amt;
+            receiver.balance += amt;
+            cout << "Transfer successful.\n";
+            return 0;
+        }
+    }
+void Wallet :: display()
+    {
+        cout<<"ID: "<<id<<endl;
+        cout<<"USERNAME: "<<username<<endl;
+        cout<<"BALANCE: "<<balance<<endl;
+    }
+
 int main()
 {
-    bank_account acc[10];
-    double acc_number;
-    int ch,t=0,i;
-    n:
-    cout<<endl<<"---bank---"<<endl<<"1. create account"<<endl<<"2. deposit money"<<endl<<"3. withdraw money"<<endl<<"4. check balance"<<endl<<"5. exit"<<endl;
-    cout<<"enter your choice : ";
+    Wallet w1,w2;
+    int ch;
+    int id,balance;
+    string username;
+    cout<<"Enter details for wallet 1:"<<endl;
+    cout<<"ID: ";
+    cin>>id;
+    cout<<"Username: ";
+    cin.ignore();
+    getline(cin,username);
+    cout<<"Balance: ";
+    cin>>balance;
+    cout<<endl;
+
+    w1.setValues(id,username,balance);
+
+
+    cout<<"Enter details for wallet 2:"<<endl;
+    cout<<"ID: ";
+    cin>>id;
+    cout<<"Username: ";
+    cin.ignore();
+    getline(cin,username);
+    cout<<"Balance: ";
+    cin>>balance;
+    cout<<endl;
+
+    w2.setValues(id,username,balance);
+
+    r: cout<<"1) Load money"<<endl;
+    cout<<"2) Transfer money"<<endl;
+    cout<<"3) Display details"<<endl;
+    cout<<"4) Exit"<<endl;
+    cout<<"Enter your choice: ";
     cin>>ch;
+
     switch(ch)
     {
     case 1:
-        acc[t].create_account();
-        t++;
-        cout<<"account created successfully"<<endl;
-        goto n;
+        {
+            int amt,n;
+            cout<<"In which wallet you want to add money: ";
+            cin>>n;
+            cout<<"Enter the amount you want to load: ";
+            cin>>amt;
+            if(n==1)
+            {
+                cout<<"Current balance is: "<<w1.loadMoney(amt)<<endl;
+            }
+            else if(n==2)
+            {
+                cout<<"Current balance is: "<<w2.loadMoney(amt)<<endl;
+            }
+            else
+            {
+                cout<<"Wallet does not exist"<<endl;
+            }
 
+            goto r;
+        }
     case 2:
-        cout<<"enter your account number : ";
-        cin>>acc_number;
-        for(i=0;i<t;i++)
         {
-            if(acc[i].search_acc(acc_number)=='v')
+            int n,amt;
+            cout<<"From which wallet you want to transfer money: ";
+            cin>>n;
+            cout<<"Enter the amount you want to transfer: ";
+            cin>>amt;
+            if(n==1)
             {
-                acc[i].depositing_money();
-                break;
+                w1.transferMoney(w2, amt);
             }
-        }
-        if(i==t)
-        {
-            cout<<"account not found"<<endl;
-        }
-        goto n;
+            else if(n==2)
+            {
+                w2.transferMoney(w1, amt);
+            }
+            else
+            {
+                cout<<"wallet does not exist.";
+            }
 
+            goto r;
+        }
     case 3:
-        cout<<"enter your account number : ";
-        cin>>acc_number;
-        for(i=0;i<t;i++)
         {
-            if(acc[i].search_acc(acc_number)=='v')
-            {
-                acc[i].withdrawing_money();
-                break;
-            }
+            w1.display();
+            w2.display();
+            goto r;
         }
-        if(i==t)
-        {
-            cout<<"account not found"<<endl;
-        }
-        goto n;
-
     case 4:
-        cout<<"enter your account number : ";
-        cin>>acc_number;
-        for(i=0;i<t;i++)
         {
-            if(acc[i].search_acc(acc_number)=='v')
-            {
-                acc[i].checking_account_balance();
-                break;
-            }
+            cout<<"THANK YOU!";
+            break;
         }
-        if(i==t)
-        {
-            cout<<"account not found"<<endl;
-        }
-        goto n;
-
-    case 5:
-        return 0;
-
     default:
-        cout<<"enter a valid choice"<<endl;
-        goto n;
+        {
+            cout<<"Invalid choice entered";
+        }
     }
 
-    return 0;
 }
